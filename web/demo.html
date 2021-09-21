@@ -1,0 +1,180 @@
+﻿<html>
+<head>
+    <title>Arion test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <script type="module" src="/arion/arion.js"></script>
+</head>
+<body>
+
+<h1>arion client hairy demo</h1>
+
+<h2>demo tokens</h2>
+<p>used as live clipboard for testing</p>
+<table>
+    <tr>
+        <th>user</th>
+        <th>token</th>
+    </tr>
+    <tr>
+        <td>student</td>
+        <td>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWFybmluZ2tleSIsImF1ZCI6ImxlYXJuaW5na2V5IiwiaWF0IjoxNjMyMTI3Nzc3LCJuYmYiOjE2MzIxMjc3NzcsImV4cCI6MTYzMjIxNDE3NywiZGF0YSI6eyJpZCI6MSwidV91aWQiOiIwXzEiLCJyb2xlIjoibWVtYmVyIiwibG9naW4iOiJzdHVkZW50IiwiZW1haWwiOiJtaWxhbnBhc2ljOTJAZ21haWwuY29tIiwibmFtZSI6Ik1PSiBTVFVERU5UIGFzZGFkcyIsInNjaG9vbF9pZCI6Mn19.yLrz8DeIXKblOMjF8-SPJaJjnYTUuZbkX0Fb5HTXWKjl9HitPzgXVkQBQTIEWuoGCXoJVY9awfKqgK-2M56a9g</td>
+    </tr>
+    <tr>
+        <td>5555</td>
+        <td>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWFybmluZ2tleSIsImF1ZCI6ImxlYXJuaW5na2V5IiwiaWF0IjoxNjMyMTI4NTg0LCJuYmYiOjE2MzIxMjg1ODQsImV4cCI6MTYzMjIxNDk4NCwiZGF0YSI6eyJpZCI6MTQ5LCJ1X3VpZCI6IjBfMTQ5Iiwicm9sZSI6Im1lbWJlciIsImxvZ2luIjoiNTU1NSIsImVtYWlsIjoibWlsYW5wYXNpYzkyQGdtYWlsLmNvbSIsIm5hbWUiOiJhc2QiLCJzY2hvb2xfaWQiOjJ9fQ.S3H56BbTQOo4RORrJQpwpMTmYk6VXewpK8RGQFkUGNT4g5XPDAh3Lc9txlehd0TAX6baZavFqZCSlhTj7A1I7A</td>
+    </tr>
+</table>
+
+<hr/>
+
+<h2>auth and connect (and use dev console)</h2>
+<label for="token">Enter LearningKey jwt token (from api identity service): </label><input type="text" id="token" name="token"/>
+<h4>this demo uses new arion ws backend service currently hosted @ out DEV environment implementing this <a href="https://gitlab.b4din.com/learningkey/learningkey/-/tree/master/services/arion2">code</a></h4>
+<button onclick="runDemo()">connect</button>
+<br/><br/>
+// after establishing a connection with backend, a list of publicSpaces that you are member of is available in arionClient.spaces<br/>
+// you become a member of Space by sending a first message to it, like:<br/>
+//   - make a comment on testResults for the first time (a new space is created with you and your professor)<br/>
+//   - send message to another student for the first time<br/>
+// or you can be added to space by another user (professor adds you to a group) or as everybody is part of their school virtual space<br/>
+<br/>
+// so, once client is initialized (`onConnected()` is fired), you are ready to start receiving messages from Spaces you are part of<br/>
+// like: if you are a part of group, and you login to app, you will get all new messages that are coming in right now but, in order to fetch previous messages,<br/>
+// (once user opened group discussion page ) `getSpaceMessageHistory()` method should be called. This demo will do it once connected for spaceId=5<br/><br/>
+
+<hr/>
+
+<label for="message">Send message: </label><input type="text" id="message" name="message"/>
+<button onclick="sendMessage()">sendMessage()</button>
+hardcoded to send messages to spaceId = 1 (school space)<br/><br/>
+// both onSpaceMessageHistory() and onNewMessage() pass new messages as params, but all the new and all of the previous messages <br/>
+// are also structured ready for usage in arionClient.spaces[spaceId].messages
+
+<hr/>
+
+<button onclick="arionClient.joinLiveSpace(1)">joinLive()</button>
+<br/>
+<div id="video_boxes"></div>
+<br/>
+<button onclick="arionClient.spaces[1].rtcMultiConnection.shareAudio()">shareAudio()</button>
+<button onclick="arionClient.spaces[1].rtcMultiConnection.stopAudio()">stopAudio()</button>
+<button onclick="arionClient.spaces[1].rtcMultiConnection.shareVideo()">shareVideo()</button>
+<button onclick="arionClient.spaces[1].rtcMultiConnection.stopVideo()">stopVideo()</button>
+<button onclick="arionClient.spaces[1].rtcMultiConnection.shareScreen()">shareScreen()</button>
+<button onclick="arionClient.spaces[1].rtcMultiConnection.stopScreen()">stopScreen()</button>
+
+
+<hr/>
+
+<ul>ToDo: (events left to be done)</ul>
+<li>riseHand</li>
+<li>typeSpecificEvents: startClassroom, endClassroom (tutor_only)</li>
+<li>permitWhiteboardTools (tutor_only)</li>
+<li>fullscreenBox (tutor_only)</li>
+<li>forbidUserMedia (tutor_only)</li>
+
+<ul>ToDo: (other stuff)</ul>
+<li>check if userMedia is allowed before firing shareMedia() - tutor can forbid cam</li>
+
+<script>
+
+    let arionClient;
+
+    function runDemo(){
+
+        let jwtToken = document.getElementById('token').value;
+        let backendUrl = 'wss://dev.learningkey.app:8090/';
+
+        arionClient = new Arion({
+            backendUrl: backendUrl,
+            jwtToken: jwtToken
+        });
+
+        arionClient.onConnected = function(spacesImMemberOf) {
+            console.log('onConnected', spacesImMemberOf);
+
+            /* getSpaceMessages sends a request for messages history, and has lastId and limit params as it is
+            intended to be used for fetching old messages once a user opens a chat page
+            onSpaceMessageHistory() is fired once data is ready */
+            arionClient.getSpaceMessageHistory(1, 0, 20);
+            arionClient.onSpaceMessageHistory = function (spaceId, messages) {
+                console.log('onSpaceMessageHistory', spaceId, messages);
+            };
+        }
+
+        arionClient.onNewMessage = function (spaceId, message) {
+            console.log('onNewMessage', spaceId, message);
+            alert('New message in space=' + spaceId + ": " + message.message);
+        }
+
+        arionClient.onJoinedLiveSpace = function (spaceData) {
+            console.log('onJoinedLiveSpace', spaceData);
+            // video conference call starts, webrtc session description packets have been exchanged
+            // and you are ready to start sharing your media: shareMedia ([cam, mic, screen])
+            // also, you will start receiving events like userSharedMedia(userThatShared, 'cam', true)
+        }
+        arionClient.onMediaShared = function (spaceId, type, isShared, stream) {
+            // is fired whenever a user shared a stream in a live session that you are also part of
+            // will be received only for Spaces for which you joinedLive()
+            console.log('onMediaShared', stream);
+
+            if(isShared){
+                if(type === 'video' || type === 'screen'){
+                    let newVideoStream = document.createElement("video");
+                    newVideoStream.srcObject = stream;
+                    newVideoStream.setAttribute("width", "320");
+                    newVideoStream.setAttribute("height", "240");
+                    document.getElementById('video_boxes').appendChild(newVideoStream);
+
+                    newVideoStream.play();
+                }
+            }
+            else{
+                // is isShared is false, it means that this stream has ended.
+                // a video box should probably be removed since the stream is stopped
+                // and a user profile photo should probably be displayed instead
+            }
+        }
+
+        arionClient.onLeftLiveSpace = function (spaceData) {
+            console.log('onLeftLiveSpace', spaceData);
+            // this is fired when you have left a live space that was previously opened
+        }
+        arionClient.onAnotherUserJoinedLiveSpace = function (spaceId, userThatJoined) {
+            console.log('onAnotherUserJoinedLiveSpace', userThatJoined);
+            // if the user who joined is the only one online => ring riingg
+        }
+        arionClient.onAnotherUserLeftLiveSpace = function (spaceId, userThatLeft) {
+            console.log('onAnotherUserLeftLiveSpace', userThatLeft);
+            // if this video call is currently underway, and you currently have space
+            // with spaceId opened on screen, there should probably be some UI changes done here
+            // like removing the user video box from the UI, show UserHasLeft on-screen notification
+        }
+
+        arionClient.onUserLeft = function (userThatLeft) {
+            console.log('onUserLeft', userThatLeft);
+            // user logged out,
+        }
+        arionClient.onUserOnlineInSpace = function (spaceId, newUser) {
+            console.log('onUserOnlineInSpace', newUser);
+            // show notification
+            // warning: this would be fired for each space that user has in common with newUser
+            // since they are probably related (multiple groups, school, classes)
+            // this will probably be fired multiple times
+            // so, a notification should probably be shown only for certain spaces
+            // like, show notification only if a user joined school dedicated space (there is only one of those)
+        }
+    }
+
+    function sendMessage(){
+        let message = document.getElementById('message').value;
+        arionClient.sendMessage(1, message)
+    }
+
+</script>
+</body>
+</html>
