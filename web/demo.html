@@ -11,24 +11,6 @@
 <body>
 
 <h1>arion client hairy demo</h1>
-
-<h2>demo tokens</h2>
-<p>used as live clipboard for testing</p>
-<table>
-    <tr>
-        <th>user</th>
-        <th>token</th>
-    </tr>
-    <tr>
-        <td>student</td>
-        <td>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWFybmluZ2tleSIsImF1ZCI6ImxlYXJuaW5na2V5IiwiaWF0IjoxNjMyMTI3Nzc3LCJuYmYiOjE2MzIxMjc3NzcsImV4cCI6MTYzMjIxNDE3NywiZGF0YSI6eyJpZCI6MSwidV91aWQiOiIwXzEiLCJyb2xlIjoibWVtYmVyIiwibG9naW4iOiJzdHVkZW50IiwiZW1haWwiOiJtaWxhbnBhc2ljOTJAZ21haWwuY29tIiwibmFtZSI6Ik1PSiBTVFVERU5UIGFzZGFkcyIsInNjaG9vbF9pZCI6Mn19.yLrz8DeIXKblOMjF8-SPJaJjnYTUuZbkX0Fb5HTXWKjl9HitPzgXVkQBQTIEWuoGCXoJVY9awfKqgK-2M56a9g</td>
-    </tr>
-    <tr>
-        <td>5555</td>
-        <td>eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJsZWFybmluZ2tleSIsImF1ZCI6ImxlYXJuaW5na2V5IiwiaWF0IjoxNjMyMTI4NTg0LCJuYmYiOjE2MzIxMjg1ODQsImV4cCI6MTYzMjIxNDk4NCwiZGF0YSI6eyJpZCI6MTQ5LCJ1X3VpZCI6IjBfMTQ5Iiwicm9sZSI6Im1lbWJlciIsImxvZ2luIjoiNTU1NSIsImVtYWlsIjoibWlsYW5wYXNpYzkyQGdtYWlsLmNvbSIsIm5hbWUiOiJhc2QiLCJzY2hvb2xfaWQiOjJ9fQ.S3H56BbTQOo4RORrJQpwpMTmYk6VXewpK8RGQFkUGNT4g5XPDAh3Lc9txlehd0TAX6baZavFqZCSlhTj7A1I7A</td>
-    </tr>
-</table>
-
 <hr/>
 
 <h2>auth and connect (and use dev console)</h2>
@@ -87,7 +69,7 @@ hardcoded to send messages to spaceId = 1 (school space)<br/><br/>
     function runDemo(){
 
         let jwtToken = document.getElementById('token').value;
-        let backendUrl = 'wss://dev.learningkey.app:8090/';
+        let backendUrl = 'ws://localhost:8090/';
 
         arionClient = new Arion({
             backendUrl: backendUrl,
@@ -100,13 +82,18 @@ hardcoded to send messages to spaceId = 1 (school space)<br/><br/>
             /* getSpaceMessages sends a request for messages history, and has lastId and limit params as it is
             intended to be used for fetching old messages once a user opens a chat page
             onSpaceMessageHistory() is fired once data is ready */
-            arionClient.getSpaceMessageHistory(1, 0, 20);
+            arionClient.getSpaceMessageHistory(1, 0, 20, function(message){});
             arionClient.onSpaceMessageHistory = function (spaceId, messages) {
                 console.log('onSpaceMessageHistory', spaceId, messages);
             };
         }
 
         arionClient.onNewMessage = function (spaceId, message) {
+
+            // onNewMessage will be fired avery time a user receives a message for a space that he is a member of,
+            // integrating client should check if chat box is currently open on users screen and append the message
+            // if it is open, or increase a message notification counter (for example)
+
             console.log('onNewMessage', spaceId, message);
             alert('New message in space=' + spaceId + ": " + message.message);
         }

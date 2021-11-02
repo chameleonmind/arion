@@ -52,16 +52,18 @@ window.Arion = class {
         };
     }
 
+    /* public */
     joinLiveSpace(spaceId){
         this.emit('joinLiveSpace', spaceId);
     }
 
+    /* public */
     sendMessage(spaceId, message){
         this.emit('sendMessage', spaceId, {message: message});
     }
 
+    /* public */
     getSpaceMessageHistory(spaceId, lastId, limit){
-        // todo (@Peda, Milos): is it possible to return a Promise here, but resolve it in eventHandler class
         this.emit('getMessages', spaceId, {lastId: lastId, limit: limit});
     }
 
