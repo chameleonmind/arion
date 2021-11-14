@@ -22,7 +22,7 @@ window.Arion = class {
             self.init(params);
         }, document.body);
 
-        // will be needed for joinLive(); since RtcMultiConnection lib uses io for sockets
+        // will be needed for joinLive(); since RtcMultiConnection lib uses io lib for sockets
         loadJS('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js', function (){}, document.body);
     }
 
@@ -36,25 +36,22 @@ window.Arion = class {
     }
 
     loadEventHandlers(){
-        let self = this;
-        self.eventHandlers = {
-            'error': new eventHandlers.ErrorHandler(self),
-            'authorized': new eventHandlers.AuthorizedHandler(self),
-            'spaces_list': new eventHandlers.SpacesListHandler(self),
-            'space_messages': new eventHandlers.SpaceMessagesHandler(self),
-            'new_message': new eventHandlers.NewMessageHandler(self),
-            'new_online_user': new eventHandlers.NewOnlineUserHandler(self),
-            'user_offline': new eventHandlers.UserOfflineHandler(self),
-            'joined_live_space': new eventHandlers.JoinedLiveSpaceHandler(self),
-            'another_user_joined_live_space': new eventHandlers.UserJoinedLiveSpaceHandler(self),
-            'left_live_space': new eventHandlers.LeftLiveSpaceHandler(self),
-            'another_user_left_live_space': new eventHandlers.UserLeftLiveSpaceHandler(self),
+        this.eventHandlers = {
+            'error': new eventHandlers.ErrorHandler(this),
+            'authorized': new eventHandlers.AuthorizedHandler(this),
+            'spaces_list': new eventHandlers.SpacesListHandler(this),
+            'space_messages': new eventHandlers.SpaceMessagesHandler(this),
+            'new_message': new eventHandlers.NewMessageHandler(this),
+            //'user_active': new eventHandlers.NewOnlineUserHandler(this), // commented out on BE as well for now
+            'user_active_on_new_device': new eventHandlers.UserOnlineOnNewDeviceHandler(this),
+            'user_offline_on_device': new eventHandlers.UserOfflineOnDeviceHandler(this),
+            'joined_live_space': new eventHandlers.JoinedLiveSpaceHandler(this),
+            'another_user_joined_live_space': new eventHandlers.UserJoinedLiveSpaceHandler(this),
+            'request_to_join_live_space': new eventHandlers.RequestToJoinLiveSpace(this),
+            'left_live_space': new eventHandlers.LeftLiveSpaceHandler(this),
+            'another_user_left_live_space': new eventHandlers.UserLeftLiveSpaceHandler(this),
+            'system_notification': new eventHandlers.SystemNotificationsHandler(this),
         };
-    }
-
-    /* public */
-    joinLiveSpace(spaceId){
-        this.emit('joinLiveSpace', spaceId);
     }
 
     /* public */
@@ -67,12 +64,26 @@ window.Arion = class {
         this.emit('getMessages', spaceId, {lastId: lastId, limit: limit});
     }
 
+    /* public */
+    joinLiveSpace(spaceId){
+        this.emit('joinLiveSpace', spaceId);
+    }
+
+    /* public */
+    requestOthersToJoin(spaceId){
+        if(this.spaces[spaceId]['participants'][this.userData.data.u_uid]['status'] !== 'live'){
+            alert('you must joinLive() a space before requesting others to join.');
+            return;
+        }
+        this.emit('requestOthersToJoin', spaceId);
+    }
+
     initSocket(){
         let self = this;
         this.wsClient = new WebSocket(this.backendUrl);
 
         this.wsClient.onopen = function(e) {
-            self.log("Connected to Arion!");
+            self.log("Connected to Arion BE! sending auth data.");
             self.emit('authorize', 0, {jwtToken: self.jwtToken});
         };
 
@@ -87,6 +98,8 @@ window.Arion = class {
                 self.error(error);
             }
         };
+
+        this.wsClient.onclose = this.onDisconnected;
     }
 
     emit(action, space = 0, data = null, callback = null){
@@ -116,6 +129,14 @@ window.Arion = class {
 
     error(object) {
         console.error('arionLog: ', object);
+    }
+
+    onDisconnected(){
+        this.log('implement/override this. handle connection lost.');
+    }
+
+    onLiveSpaceConnectionBroke(){ // ToDo: finish this
+        this.log('implement/override this. handle connection lost.');
     }
 }
 

@@ -25,7 +25,7 @@ class AuthorizedHandler extends BaseEventHandler {
 class SpaceMessagesHandler extends BaseEventHandler {
     handle(data){
         let messages = data.data;
-        for(let i in messages){
+        for(let i in messages){ // populate messages
             this.arion.spaces[data.space]['messages'][messages[i].id] = messages[i];
         }
         this.arion.onSpaceMessageHistory(data.space, messages);
@@ -41,20 +41,21 @@ class SpacesListHandler extends BaseEventHandler {
     }
 }
 
-class NewOnlineUserHandler extends BaseEventHandler {
+class UserOnlineOnNewDeviceHandler extends BaseEventHandler {
     handle(data){
-        this.arion.spaces[data.space]['participants'][data.data.resourceId] = data.data;
+        // updates whole user object
+        this.arion.spaces[data.space]['participants'][data.data.u_uid] = data.data;
 
-        this.arion.onUserOnlineInSpace(data.space, data.data);
+        this.arion.onUserOnlineOnDeviceInSpace(data.space, data.data);
     }
 }
 
-class UserOfflineHandler extends BaseEventHandler {
+class UserOfflineOnDeviceHandler extends BaseEventHandler {
     handle(data){
-        let userThatLeft = this.arion.spaces[data.space].participants[data.data];
-        delete this.arion.spaces[data.space].participants[data.data];
+        // updates whole user object
+        this.arion.spaces[data.space]['participants'][data.data.u_uid] = data.data;
 
-        this.arion.onUserLeft(userThatLeft);
+        this.arion.onUserOfflineOnDeviceInSpace(data.space, data.data);
     }
 }
 
@@ -67,7 +68,7 @@ class NewMessageHandler extends BaseEventHandler {
 
 class JoinedLiveSpaceHandler extends BaseEventHandler {
     handle(data){
-        this.arion.spaces[data.space]['participants'][data.data]['status'] = 'live';
+        this.arion.spaces[data.space] = data.data;
 
         this.arion.spaces[data.space].rtcMultiConnection = new RtcSpace(this.arion, data.space);
         this.arion.spaces[data.space].rtcMultiConnection.joinSpace();
@@ -80,7 +81,8 @@ class LeftLiveSpaceHandler extends BaseEventHandler {
     handle(data){
         this.arion.spaces[data.space]['participants'][data.data]['status'] = 'online';
 
-        // ToDo: maybe participant streams and media objects should be reseted
+        // ToDo: maybe participant streams and media objects should be reset
+        // and test this thoroughly
         delete this.arion.spaces[data.space].rtcMultiConnection;
 
         this.arion.onLeftLiveSpace(this.arion.spaces[data.space]);
@@ -89,9 +91,14 @@ class LeftLiveSpaceHandler extends BaseEventHandler {
 
 class UserJoinedLiveSpaceHandler extends BaseEventHandler {
     handle(data){
-        let userThatJoined = this.arion.spaces[data.space]['participants'][data.data];
-        this.arion.spaces[data.space]['participants'][data.data]['status'] = 'live';
-        this.arion.onAnotherUserJoinedLiveSpace(data.space, userThatJoined);
+        this.arion.spaces[data.space]['participants'][data.data.u_uid] = data.data;
+        this.arion.onAnotherUserJoinedLiveSpace(data.space, data.data);
+    }
+}
+
+class RequestToJoinLiveSpace extends BaseEventHandler {
+    handle(data){
+        this.arion.onRequestToJoinLiveSpace(data.space, data.data);
     }
 }
 
@@ -103,16 +110,24 @@ class UserLeftLiveSpaceHandler extends BaseEventHandler {
     }
 }
 
+class SystemNotificationsHandler extends BaseEventHandler {
+    handle(data){
+        this.arion.log(data);
+    }
+}
+
 export {
     ErrorHandler,
     AuthorizedHandler,
     SpacesListHandler,
     SpaceMessagesHandler,
     NewMessageHandler,
-    NewOnlineUserHandler,
-    UserOfflineHandler,
+    UserOnlineOnNewDeviceHandler,
+    UserOfflineOnDeviceHandler,
     JoinedLiveSpaceHandler,
     UserJoinedLiveSpaceHandler,
+    RequestToJoinLiveSpace,
     LeftLiveSpaceHandler,
-    UserLeftLiveSpaceHandler
+    UserLeftLiveSpaceHandler,
+    SystemNotificationsHandler
 }

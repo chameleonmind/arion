@@ -74,16 +74,8 @@ class RtcSpace {
     }
 
     onSignalingSocketDisconnect(e) {
+        this.arion.log('watafak'); // FixMe
         // ToDo: should invoke something like arionClient.onLiveSessionBroke();
-
-        /*if(!unloadTriggered) {
-            showSmallPopup(
-                translate('error_occurred'),
-                translate('internet_problem'),
-                translate('reload'),
-                'reload_app', null
-            );
-        }*/
     }
 
     onMediaShare(e, callback) {
@@ -91,9 +83,7 @@ class RtcSpace {
         setTimeout(function (){
 
             let type = self.getStreamType(e.stream);
-
-            self.arion.spaces[self.spaceId].participants[e.extra.resource_id].media[type] = 'on';
-            self.arion.spaces[self.spaceId].participants[e.extra.resource_id].streams[type] = e.stream;
+            self.arion.spaces[self.spaceId].participants[e.extra.u_uid].devices[e.extra.resource_id].streams[type] = e.stream;
 
             setTimeout(function () {
                 callback(type, e.stream);
@@ -107,8 +97,7 @@ class RtcSpace {
 
             let type = self.getStreamType(e.stream);
 
-            self.arion.spaces[self.spaceId].participants[e.extra.resource_id].media[type] = 'off';
-            self.arion.spaces[self.spaceId].participants[e.extra.resource_id].streams[type] = null;
+            self.arion.spaces[self.spaceId].participants[e.extra.u_uid].devices[e.extra.resource_id].streams[type] = null;
 
             setTimeout(function () {
                 callback(type, e.stream);
@@ -118,8 +107,7 @@ class RtcSpace {
 
     shareAudio(){
         if(!this.activeSession){
-            throw new Error('You must open Live session. Call joinLive().');
-            return;
+            throw new Error('You must open Live session. Call joinLive() first.');
         }
         if (!this.rtcStreamCommandIssued) {
             let self = this;
@@ -167,6 +155,9 @@ class RtcSpace {
     }
 
     shareVideo(){
+        if(!this.activeSession){
+            throw new Error('You must open Live session. Call joinLive() first.');
+        }
         if (!this.rtcStreamCommandIssued) {
             let self = this;
             this.rtcStreamCommandIssued = true;
@@ -204,6 +195,9 @@ class RtcSpace {
     }
 
     shareScreen() {
+        if(!this.activeSession){
+            throw new Error('You must open Live session. Call joinLive() first.');
+        }
         if (!this.rtcStreamCommandIssued) {
             let self = this;
             this.rtcStreamCommandIssued = true;
@@ -214,13 +208,6 @@ class RtcSpace {
                 streamCallback: function (stream) {
                     self.screenStreamId = stream.streamid;
                     self.unsetCommandIssuedFlag();
-
-                    /*if(myClass){
-                        setTimeout(function (){
-                            fullscreenBoxId = 'participant_' + user_info.u_user_id + '_screen'
-                            emitFullscreenBox();
-                        }, 200);
-                    }*/
                 }
             });
         } else {
@@ -239,6 +226,9 @@ class RtcSpace {
         });
     }
 
+    /**
+     * Modifies sdp (rtc session description) packets information about bandwidth, etc.
+     * */
     loadSettings(){
         let BandwidthHandler = this.rtcMultiConnection.BandwidthHandler;
 
