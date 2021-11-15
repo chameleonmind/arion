@@ -18,7 +18,7 @@ window.Arion = class {
 
     constructor(params) {
         let self = this;
-        loadJS('arion/RTCMultiConnection-v3.6.9.js', function (){
+        loadJS('https://milanpasic92.github.io/arion/web/arion/RTCMultiConnection-v3.6.9.js', function (){
             self.init(params);
         }, document.body);
 
