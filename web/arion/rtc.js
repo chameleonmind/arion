@@ -48,10 +48,13 @@ class RtcSpace {
         this.rtcMultiConnection.trickleIce = true;
 
         this.rtcMultiConnection.sdpConstraints.mandatory = {OfferToReceiveAudio: true, OfferToReceiveVideo: true};
-        window.skipRTCMultiConnectionLogs = false;
         this.rtcMultiConnection.maxParticipantsAllowed = 128;
 
-        this.rtcMultiConnection.onSocketDisconnect = this.onSignalingSocketDisconnect;
+        this.rtcMultiConnection.enableLogs = arion.logsEnabled;
+
+        this.rtcMultiConnection.onSocketDisconnect = function (e){
+            self.onSignalingSocketDisconnect(e, self);
+        }
         this.rtcMultiConnection.onstream = function (e){
             self.onMediaShare(e, function (type, stream){
                 self.arion.onMediaShared(spaceId, type, true, stream);
@@ -73,9 +76,27 @@ class RtcSpace {
         });
     }
 
-    onSignalingSocketDisconnect(e) {
-        this.arion.log('watafak'); // FixMe
-        // ToDo: should invoke something like arionClient.onLiveSessionBroke();
+    dropFromSpace() { // should update once new method is available: https://www.rtcmulticonnection.org/docs/closeSocket/
+        let connection = this.rtcMultiConnection;
+        this.activeSession = false;
+
+        // stop all local cameras
+        connection.attachStreams.forEach(function(localStream) {
+            localStream.stop();
+        });
+
+        // disconnect with all users
+        connection.getAllParticipants().forEach(function(pid) {
+            connection.disconnectWith(pid);
+        });
+
+        setTimeout(function (){
+            connection.closeSocket();
+        }, 50);
+    }
+
+    onSignalingSocketDisconnect(e, me) {
+        me.arion.onLiveSpaceConnectionBroke(me.spaceId);
     }
 
     onMediaShare(e, callback) {
@@ -86,7 +107,9 @@ class RtcSpace {
             self.arion.spaces[self.spaceId].participants[e.extra.u_uid].devices[e.extra.resource_id].streams[type] = e.stream;
 
             setTimeout(function () {
-                callback(type, e.stream);
+                if(self.activeSession) {
+                    callback(type, e.stream);
+                }
             }, 20);
         }, 20);
     }

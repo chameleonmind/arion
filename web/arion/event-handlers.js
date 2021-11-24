@@ -77,15 +77,18 @@ class JoinedLiveSpaceHandler extends BaseEventHandler {
     }
 }
 
+class AlreadyJoinedLiveSpaceHandler extends BaseEventHandler {
+    handle(data){
+        this.arion.spaces[data.space]['participants'][data.data.u_uid] = data.data;
+    }
+}
+
 class LeftLiveSpaceHandler extends BaseEventHandler {
     handle(data){
-        this.arion.spaces[data.space]['participants'][data.data]['status'] = 'online';
+        this.arion.spaces[data.space]['participants'][data.data.u_uid] = data.data;
+        this.arion.spaces[data.space].rtcMultiConnection.dropFromSpace();
 
-        // ToDo: maybe participant streams and media objects should be reset
-        // and test this thoroughly
         delete this.arion.spaces[data.space].rtcMultiConnection;
-
-        this.arion.onLeftLiveSpace(this.arion.spaces[data.space]);
     }
 }
 
@@ -104,9 +107,8 @@ class RequestToJoinLiveSpace extends BaseEventHandler {
 
 class UserLeftLiveSpaceHandler extends BaseEventHandler {
     handle(data){
-        let userThatLeft = this.arion.spaces[data.space]['participants'][data.data];
-        this.arion.spaces[data.space]['participants'][data.data]['status'] = 'online';
-        this.arion.onAnotherUserLeftLiveSpace(data.space, userThatLeft);
+        this.arion.spaces[data.space]['participants'][data.data.u_uid] = data.data;
+        this.arion.onAnotherUserLeftLiveSpace(data.space, data.data);
     }
 }
 
@@ -125,6 +127,7 @@ export {
     UserOnlineOnNewDeviceHandler,
     UserOfflineOnDeviceHandler,
     JoinedLiveSpaceHandler,
+    AlreadyJoinedLiveSpaceHandler,
     UserJoinedLiveSpaceHandler,
     RequestToJoinLiveSpace,
     LeftLiveSpaceHandler,

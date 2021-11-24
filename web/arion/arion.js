@@ -41,11 +41,12 @@ window.Arion = class {
             'authorized': new eventHandlers.AuthorizedHandler(this),
             'spaces_list': new eventHandlers.SpacesListHandler(this),
             'space_messages': new eventHandlers.SpaceMessagesHandler(this),
-            'new_message': new eventHandlers.NewMessageHandler(this),
+            'new_space_message': new eventHandlers.NewMessageHandler(this),
             //'user_active': new eventHandlers.NewOnlineUserHandler(this), // commented out on BE as well for now
             'user_active_on_new_device': new eventHandlers.UserOnlineOnNewDeviceHandler(this),
             'user_offline_on_device': new eventHandlers.UserOfflineOnDeviceHandler(this),
             'joined_live_space': new eventHandlers.JoinedLiveSpaceHandler(this),
+            'already_joined_live_space': new eventHandlers.AlreadyJoinedLiveSpaceHandler(this),
             'another_user_joined_live_space': new eventHandlers.UserJoinedLiveSpaceHandler(this),
             'request_to_join_live_space': new eventHandlers.RequestToJoinLiveSpace(this),
             'left_live_space': new eventHandlers.LeftLiveSpaceHandler(this),
@@ -70,9 +71,18 @@ window.Arion = class {
     }
 
     /* public */
+    dropFromLiveSpace(spaceId){
+        if(!this.spaces[spaceId].rtcMultiConnection.activeSession){
+            this.error({'dropFromLiveSpace':'there is no active session to close for this spaceId'})
+            return;
+        }
+        this.emit('leaveLiveSpace', spaceId);
+    }
+
+    /* public */
     requestOthersToJoin(spaceId){
-        if(this.spaces[spaceId]['participants'][this.userData.data.u_uid]['status'] !== 'live'){
-            alert('you must joinLive() a space before requesting others to join.');
+        if(!arionClient.spaces[spaceId].rtcMultiConnection.activeSession){
+            this.error({'requestOthersToJoin':'you must joinLive() a space before requesting others to join'})
             return;
         }
         this.emit('requestOthersToJoin', spaceId);
@@ -131,12 +141,30 @@ window.Arion = class {
         console.error('arionLog: ', object);
     }
 
-    onDisconnected(){
-        this.log('implement/override this. handle connection lost.');
+    disconnect() {
+        for(let space in this.spaces) {
+            if(this.spaces[space].rtcMultiConnection && this.spaces[space].rtcMultiConnection.activeSession) {
+                this.spaces[space].rtcMultiConnection.dropFromSpace();
+                delete this.spaces[space].rtcMultiConnection;
+            }
+        }
+
+        let self = this;
+        setTimeout(function (){
+            self.wsClient.close();
+        },50);
     }
 
-    onLiveSpaceConnectionBroke(){ // ToDo: finish this
-        this.log('implement/override this. handle connection lost.');
+    onLiveSpaceConnectionBroke(spaceId){
+        this.onLeftLiveSpace(this.spaces[spaceId]);
+    }
+
+    onDisconnected(){
+        this.log('onDisconnected: implement/override this. handle connection lost.');
+    }
+
+    onLeftLiveSpace(){
+        this.log('onLeftLiveSpace: implement/override this. handle closed video call.');
     }
 }
 
