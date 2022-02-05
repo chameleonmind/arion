@@ -3,6 +3,7 @@ import * as eventHandlers from './event-handlers.js';
 window.Arion = class {
 
     logsEnabled = true;
+    connected = false;
 
     backendUrl = null;
     jwtToken = null;
@@ -48,7 +49,7 @@ window.Arion = class {
             'joined_live_space': new eventHandlers.JoinedLiveSpaceHandler(this),
             'already_joined_live_space': new eventHandlers.AlreadyJoinedLiveSpaceHandler(this),
             'another_user_joined_live_space': new eventHandlers.UserJoinedLiveSpaceHandler(this),
-            'request_to_join_live_space': new eventHandlers.RequestToJoinLiveSpace(this),
+            'request_to_join_live_space': new eventHandlers.RequestToJoinLiveSpaceHandler(this),
             'left_live_space': new eventHandlers.LeftLiveSpaceHandler(this),
             'another_user_left_live_space': new eventHandlers.UserLeftLiveSpaceHandler(this),
             'system_notification': new eventHandlers.SystemNotificationsHandler(this),
@@ -109,12 +110,19 @@ window.Arion = class {
             }
         };
 
-        this.wsClient.onclose = this.onDisconnected;
+        this.wsClient.onclose = function (){
+            this.arion.connected = false;
+            self.onDisconnected();
+        }
     }
 
     emit(action, space = 0, data = null, callback = null){
         if(!this.wsClient){
             this.error('wsClient not initialized');
+        }
+
+        if(!this.connected){
+            this.error('arion not connected');
         }
 
         let message = {
@@ -139,6 +147,7 @@ window.Arion = class {
 
     error(object) {
         console.error('arionLog: ', object);
+        this.onError(object);
     }
 
     disconnect() {
@@ -155,6 +164,42 @@ window.Arion = class {
         },50);
     }
 
+    onConnected(spaces){
+        // implement this
+    }
+
+    onSpaceMessageHistory(space, messages){
+        // implement this
+    }
+
+    onUserOnlineOnDeviceInSpace(space, data){
+        // implement this
+    }
+
+    onUserOfflineOnDeviceInSpace(space, data){
+        // implement this
+    }
+
+    onNewMessage(space, data){
+        // implement this
+    }
+
+    onJoinedLiveSpace(space){
+        // implement this
+    }
+
+    onAnotherUserJoinedLiveSpace(space, data){
+        // implement this
+    }
+
+    onAnotherUserLeftLiveSpace(space, data){
+        // implement this
+    }
+
+    onRequestToJoinLiveSpace(space, data){
+        // implement this
+    }
+
     onLiveSpaceConnectionBroke(spaceId){
         this.onLeftLiveSpace(this.spaces[spaceId]);
     }
@@ -163,8 +208,12 @@ window.Arion = class {
         this.log('onDisconnected: implement/override this. handle connection lost.');
     }
 
-    onLeftLiveSpace(){
-        this.log('onLeftLiveSpace: implement/override this. handle closed video call.');
+    onLeftLiveSpace(space){
+        // implement this
+    }
+
+    onError(object){
+        // implement this
     }
 }
 

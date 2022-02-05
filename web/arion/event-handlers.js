@@ -34,6 +34,7 @@ class SpaceMessagesHandler extends BaseEventHandler {
 
 class SpacesListHandler extends BaseEventHandler {
     handle(data){
+        this.arion.connected = true;
         for(let i in data.data){
             this.arion.spaces[data.data[i].info.id] = data.data[i];
         }
@@ -99,7 +100,7 @@ class UserJoinedLiveSpaceHandler extends BaseEventHandler {
     }
 }
 
-class RequestToJoinLiveSpace extends BaseEventHandler {
+class RequestToJoinLiveSpaceHandler extends BaseEventHandler {
     handle(data){
         this.arion.onRequestToJoinLiveSpace(data.space, data.data);
     }
@@ -129,7 +130,7 @@ export {
     JoinedLiveSpaceHandler,
     AlreadyJoinedLiveSpaceHandler,
     UserJoinedLiveSpaceHandler,
-    RequestToJoinLiveSpace,
+    RequestToJoinLiveSpaceHandler,
     LeftLiveSpaceHandler,
     UserLeftLiveSpaceHandler,
     SystemNotificationsHandler
