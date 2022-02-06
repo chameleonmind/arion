@@ -35,8 +35,10 @@ class SpaceMessagesHandler extends BaseEventHandler {
 class SpacesListHandler extends BaseEventHandler {
     handle(data){
         this.arion.connected = true;
-        for(let i in data.data){
-            this.arion.spaces[data.data[i].info.reference_entity][data.data[i].info.id] = data.data[i];
+        for(let type in data.data){
+            for(let id in data.data[type]){
+                this.arion.spaces[type][data.data[type][id].info.id] = data.data[type][id];
+            }
         }
         this.arion.onConnected(this.arion.spaces);
     }
