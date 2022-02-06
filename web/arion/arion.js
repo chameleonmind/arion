@@ -122,7 +122,7 @@ window.Arion = class {
             return;
         }
 
-        if(!this.connected && ['authorize', 'connect'].includes(action)){
+        if(!this.connected && !['authorize', 'connect'].includes(action)){
             this.error('arion not connected');
             return;
         }
