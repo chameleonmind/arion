@@ -119,10 +119,12 @@ window.Arion = class {
     emit(action, space = 0, data = null, callback = null){
         if(!this.wsClient){
             this.error('wsClient not initialized');
+            return;
         }
 
-        if(!this.connected){
+        if(!this.connected && ['authorize', 'connect'].includes(action)){
             this.error('arion not connected');
+            return;
         }
 
         let message = {

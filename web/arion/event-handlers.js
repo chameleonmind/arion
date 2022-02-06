@@ -36,7 +36,7 @@ class SpacesListHandler extends BaseEventHandler {
     handle(data){
         this.arion.connected = true;
         for(let i in data.data){
-            this.arion.spaces[data.data[i].info.id] = data.data[i];
+            this.arion.spaces[data.data[i].info.reference_entity][data.data[i].info.id] = data.data[i];
         }
         this.arion.onConnected(this.arion.spaces);
     }
