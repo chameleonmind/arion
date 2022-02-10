@@ -32,12 +32,24 @@ class SpaceMessagesHandler extends BaseEventHandler {
     }
 }
 
+class PublicSpaceResolvedHandler extends BaseEventHandler {
+    handle(data){
+        let space = {};
+
+        space.info = data.data;
+        space.messages = [];
+
+        this.arion.spaces[space.info.id] = space;
+        this.arion.onPublicSpaceResolved(space.info);
+    }
+}
+
 class SpacesListHandler extends BaseEventHandler {
     handle(data){
         this.arion.connected = true;
         for(let type in data.data){
             for(let id in data.data[type]){
-                this.arion.spaces[type][data.data[type][id].info.id] = data.data[type][id];
+                this.arion.spaces[data.data[type][id].info.id] = data.data[type][id];
             }
         }
         this.arion.onConnected(this.arion.spaces);
@@ -66,6 +78,13 @@ class NewMessageHandler extends BaseEventHandler {
     handle(data){
         this.arion.spaces[data.space]['messages'][data.data.id] = data.data;
         this.arion.onNewMessage(data.space, data.data);
+    }
+}
+
+class NewPublicSpaceMessageHandler extends BaseEventHandler {
+    handle(data){
+        this.arion.spaces[data.space]['messages'][data.data.lk_data.id] = data.data.lk_data;
+        this.arion.onNewMessage(data.space, data.data.lk_data);
     }
 }
 
@@ -127,6 +146,7 @@ export {
     SpacesListHandler,
     SpaceMessagesHandler,
     NewMessageHandler,
+    NewPublicSpaceMessageHandler,
     UserOnlineOnNewDeviceHandler,
     UserOfflineOnDeviceHandler,
     JoinedLiveSpaceHandler,
@@ -135,5 +155,6 @@ export {
     RequestToJoinLiveSpaceHandler,
     LeftLiveSpaceHandler,
     UserLeftLiveSpaceHandler,
-    SystemNotificationsHandler
+    SystemNotificationsHandler,
+    PublicSpaceResolvedHandler
 }

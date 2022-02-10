@@ -41,8 +41,10 @@ window.Arion = class {
             'error': new eventHandlers.ErrorHandler(this),
             'authorized': new eventHandlers.AuthorizedHandler(this),
             'spaces_list': new eventHandlers.SpacesListHandler(this),
+            'public_space_resolved': new eventHandlers.PublicSpaceResolvedHandler(this),
             'space_messages': new eventHandlers.SpaceMessagesHandler(this),
-            'new_space_message': new eventHandlers.NewMessageHandler(this),
+            'new_private_message': new eventHandlers.NewMessageHandler(this),
+            'new_public_space_message': new eventHandlers.NewPublicSpaceMessageHandler(this),
             //'user_active': new eventHandlers.NewOnlineUserHandler(this), // commented out on BE as well for now
             'user_active_on_new_device': new eventHandlers.UserOnlineOnNewDeviceHandler(this),
             'user_offline_on_device': new eventHandlers.UserOfflineOnDeviceHandler(this),
@@ -54,6 +56,11 @@ window.Arion = class {
             'another_user_left_live_space': new eventHandlers.UserLeftLiveSpaceHandler(this),
             'system_notification': new eventHandlers.SystemNotificationsHandler(this),
         };
+    }
+
+    /* public */
+    resolvePublicSpace(spaceCode){
+        this.emit('resolvePublicSpace', 0, {spaceCode: spaceCode});
     }
 
     /* public */
@@ -111,7 +118,7 @@ window.Arion = class {
         };
 
         this.wsClient.onclose = function (){
-            this.arion.connected = false;
+            self.connected = false;
             self.onDisconnected();
         }
     }
@@ -174,11 +181,19 @@ window.Arion = class {
         // implement this
     }
 
+    onPublicSpaceResolved(space){
+        // implement this
+    }
+
     onUserOnlineOnDeviceInSpace(space, data){
         // implement this
     }
 
     onUserOfflineOnDeviceInSpace(space, data){
+        // implement this
+    }
+
+    defaultMessageHandler(space, data){
         // implement this
     }
 
