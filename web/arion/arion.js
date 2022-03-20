@@ -19,7 +19,7 @@ window.Arion = class {
 
     constructor(params) {
         let self = this;
-        loadJS('https://milanpasic92.github.io/arion/web/arion/RTCMultiConnection-v3.6.9.js', function (){
+        loadJS('https://github.com/muaz-khan/RTCMultiConnection/releases/download/3.6.9/RTCMultiConnection.js', function (){
             self.init(params);
         }, document.body);
 
@@ -186,6 +186,10 @@ window.Arion = class {
     }
 
     onUserOnlineOnDeviceInSpace(space, data){
+        // implement this
+    }
+
+    onUpdatedPrivateChatUserStatus(space, data){
         // implement this
     }
 

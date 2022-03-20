@@ -63,6 +63,8 @@ class UserOnlineOnNewDeviceHandler extends BaseEventHandler {
 
         if(this.arion.spaces[data.space]['info']['reference_entity'] === 'private'){
             this.arion.spaces[data.space]['personalData']['relatedEntity'] = data.data;
+
+            this.arion.onUpdatedPrivateChatUserStatus(data.space, data.data);
         }
 
         this.arion.onUserOnlineOnDeviceInSpace(data.space, data.data);
@@ -76,6 +78,8 @@ class UserOfflineOnDeviceHandler extends BaseEventHandler {
 
         if(this.arion.spaces[data.space]['info']['reference_entity'] === 'private'){
             this.arion.spaces[data.space]['personalData']['relatedEntity'] = data.data;
+
+            this.arion.onUpdatedPrivateChatUserStatus(data.space, data.data);
         }
 
         this.arion.onUserOfflineOnDeviceInSpace(data.space, data.data);
@@ -166,4 +170,3 @@ export {
     SystemNotificationsHandler,
     PublicSpaceResolvedHandler
 }
-
