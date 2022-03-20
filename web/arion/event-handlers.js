@@ -61,6 +61,10 @@ class UserOnlineOnNewDeviceHandler extends BaseEventHandler {
         // updates whole user object
         this.arion.spaces[data.space]['participants'][data.data.u_uid] = data.data;
 
+        if(this.arion.spaces[data.space]['info']['reference_entity'] === 'private'){
+            this.arion.spaces[data.space]['personalData']['relatedEntity'] = data.data;
+        }
+
         this.arion.onUserOnlineOnDeviceInSpace(data.space, data.data);
     }
 }
