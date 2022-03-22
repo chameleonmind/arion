@@ -41,7 +41,7 @@ window.Arion = class {
             'error': new eventHandlers.ErrorHandler(this),
             'authorized': new eventHandlers.AuthorizedHandler(this),
             'spaces_list': new eventHandlers.SpacesListHandler(this),
-            'public_space_resolved': new eventHandlers.PublicSpaceResolvedHandler(this),
+            'connected_to_public_space': new eventHandlers.ConnectedToPublicSpaceHandler(this),
             'space_messages': new eventHandlers.SpaceMessagesHandler(this),
             'new_private_message': new eventHandlers.NewMessageHandler(this),
             'new_public_space_message': new eventHandlers.NewPublicSpaceMessageHandler(this),
@@ -59,8 +59,8 @@ window.Arion = class {
     }
 
     /* public */
-    resolvePublicSpace(spaceCode){
-        this.emit('resolvePublicSpace', 0, {spaceCode: spaceCode});
+    connectToPublicSpace(spaceCode){
+        this.emit('connectToPublicSpace', 0, {spaceCode: spaceCode});
     }
 
     /* public */
@@ -181,7 +181,7 @@ window.Arion = class {
         // implement this
     }
 
-    onPublicSpaceResolved(space){
+    onConnectedToPublicSpace(space){
         // implement this
     }
 

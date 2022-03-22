@@ -32,15 +32,10 @@ class SpaceMessagesHandler extends BaseEventHandler {
     }
 }
 
-class PublicSpaceResolvedHandler extends BaseEventHandler {
+class ConnectedToPublicSpaceHandler extends BaseEventHandler {
     handle(data){
-        let space = {};
-
-        space.info = data.data;
-        space.messages = [];
-
-        this.arion.spaces[space.info.id] = space;
-        this.arion.onPublicSpaceResolved(space.info);
+        this.arion.spaces[data.data.info.id] = data.data;
+        this.arion.onConnectedToPublicSpace(data.data.info);
     }
 }
 
@@ -168,5 +163,5 @@ export {
     LeftLiveSpaceHandler,
     UserLeftLiveSpaceHandler,
     SystemNotificationsHandler,
-    PublicSpaceResolvedHandler
+    ConnectedToPublicSpaceHandler
 }
