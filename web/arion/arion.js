@@ -89,7 +89,7 @@ window.Arion = class {
 
     /* public */
     requestOthersToJoin(spaceId){
-        if(!arionClient.spaces[spaceId].rtcMultiConnection.activeSession){
+        if(!this.spaces[spaceId].rtcMultiConnection.activeSession){
             this.error({'requestOthersToJoin':'you must joinLive() a space before requesting others to join'})
             return;
         }
