@@ -56,8 +56,8 @@ class RtcSpace {
             self.onSignalingSocketDisconnect(e, self);
         }
         this.rtcMultiConnection.onstream = function (e){
-            self.onMediaShare(e, function (type, stream){
-                self.arion.onMediaShared(spaceId, type, true, stream);
+            self.onMediaShare(e, function (type, stream, extra){
+                self.arion.onMediaShared(spaceId, type, true, stream, extra);
             });
         };
         this.rtcMultiConnection.onstreamended = function (e){
@@ -108,7 +108,7 @@ class RtcSpace {
 
             setTimeout(function () {
                 if(self.activeSession) {
-                    callback(type, e.stream);
+                    callback(type, e.stream, e.extra);
                 }
             }, 20);
         }, 20);
