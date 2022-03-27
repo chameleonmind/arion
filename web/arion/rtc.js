@@ -292,18 +292,15 @@ class RtcSpace {
     }
 
     getStreamType(stream) {
-        let type = null;
         if(stream.isScreen){
-            type = 'screen';
+            return 'screen';
         }
         else if(stream.isVideo) {
-            type = 'video';
+            return 'video';
         }
-        else if(stream.isAudio){
-            type = 'audio';
+        else{
+            return 'audio';
         }
-
-        return type;
     }
 }
 
