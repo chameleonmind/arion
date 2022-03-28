@@ -294,11 +294,14 @@ class RtcSpace {
     }
 
     getStreamType(stream) {
-        let instance = JSON.parse(stream.idInstance);
-        if(instance.isScreen){
-            return 'screen';
+        if(stream.hasOwnProperty('idInstance')){
+            let instance = JSON.parse(stream.idInstance);
+            if(instance.isScreen){
+                return 'screen';
+            }
         }
-        else if(stream.isVideo) {
+
+        if(stream.isVideo) {
             return 'video';
         }
         else{
