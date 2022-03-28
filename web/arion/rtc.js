@@ -294,7 +294,10 @@ class RtcSpace {
     }
 
     getStreamType(stream) {
-        if(stream.hasOwnProperty('idInstance')){
+        if(stream.isScreen){
+            return 'screen';
+        }
+        if(stream.hasOwnProperty('idInstance')){ // local videos contain idInstance
             let instance = JSON.parse(stream.idInstance);
             if(instance.isScreen){
                 return 'screen';
