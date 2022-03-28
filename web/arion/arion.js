@@ -19,7 +19,8 @@ window.Arion = class {
 
     constructor(params) {
         let self = this;
-        loadJS('https://github.com/muaz-khan/RTCMultiConnection/releases/download/3.6.9/RTCMultiConnection.js', function (){
+        // @ToDo: this should be fixed to load the script internally from the package
+        loadJS('https://milanpasic92.github.io/arion/web/arion/RTCMultiConnection-v3.6.9.js', function (){
             self.init(params);
         }, document.body);
 
