@@ -40,6 +40,8 @@ class RtcSpace {
 
         this.rtcMultiConnection.extra = {
             u_uid: this.arion.userData.data.u_uid,
+            profile_photo: this.arion.userData.data.profile_photo,
+            name: this.arion.userData.data.name,
             resource_id: this.arion.userData.resourceId,
         };
 
