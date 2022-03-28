@@ -63,8 +63,8 @@ class RtcSpace {
             });
         };
         this.rtcMultiConnection.onstreamended = function (e){
-            self.onMediaShareEnded(e, function (type, stream){
-                self.arion.onMediaShared(spaceId, type, false, stream);
+            self.onMediaShareEnded(e, function (type, stream, extra){
+                self.arion.onMediaShared(spaceId, type, false, stream, extra);
             });
         };
         this.loadSettings();
@@ -125,7 +125,7 @@ class RtcSpace {
             self.arion.spaces[self.spaceId].participants[e.extra.u_uid].devices[e.extra.resource_id].streams[type] = null;
 
             setTimeout(function () {
-                callback(type, e.stream);
+                callback(type, e.stream, e.extra);
             }, 20);
         }, 20);
     }
