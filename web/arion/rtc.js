@@ -296,7 +296,7 @@ class RtcSpace {
         if(instance.isScreen){
             return 'screen';
         }
-        else if(instance.isVideo) {
+        else if(stream.isVideo) {
             return 'video';
         }
         else{
