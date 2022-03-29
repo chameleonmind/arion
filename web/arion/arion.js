@@ -97,6 +97,15 @@ window.Arion = class {
         this.emit('requestOthersToJoin', spaceId);
     }
 
+    /* public */
+    forbidMemberDevice(spaceId, uUid, deviceType, status){
+        if(!this.spaces[spaceId].rtcMultiConnection.activeSession){
+            this.error({'requestOthersToJoin':'you must joinLive() a space before requesting others to join'})
+            return;
+        }
+        this.emit('forbidMemberDevice', spaceId, {uUid: uUid, deviceType: deviceType, status: status});
+    }
+
     initSocket(){
         let self = this;
         this.wsClient = new WebSocket(this.backendUrl);
