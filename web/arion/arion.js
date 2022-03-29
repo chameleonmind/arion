@@ -46,7 +46,6 @@ window.Arion = class {
             'space_messages': new eventHandlers.SpaceMessagesHandler(this),
             'new_private_message': new eventHandlers.NewMessageHandler(this),
             'new_public_space_message': new eventHandlers.NewPublicSpaceMessageHandler(this),
-            //'user_active': new eventHandlers.NewOnlineUserHandler(this), // commented out on BE as well for now
             'user_active_on_new_device': new eventHandlers.UserOnlineOnNewDeviceHandler(this),
             'user_offline_on_device': new eventHandlers.UserOfflineOnDeviceHandler(this),
             'joined_live_space': new eventHandlers.JoinedLiveSpaceHandler(this),
@@ -56,6 +55,7 @@ window.Arion = class {
             'left_live_space': new eventHandlers.LeftLiveSpaceHandler(this),
             'another_user_left_live_space': new eventHandlers.UserLeftLiveSpaceHandler(this),
             'system_notification': new eventHandlers.SystemNotificationsHandler(this),
+            'member_device_status_update': new eventHandlers.MemberDeviceStatusUpdateHandler(this),
         };
     }
 
@@ -228,6 +228,10 @@ window.Arion = class {
     }
 
     onRequestToJoinLiveSpace(space, data){
+        // implement this
+    }
+
+    onLiveMemberDeviceStatusUpdated(space, userLiveData){
         // implement this
     }
 

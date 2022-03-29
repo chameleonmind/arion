@@ -147,6 +147,13 @@ class SystemNotificationsHandler extends BaseEventHandler {
     }
 }
 
+class MemberDeviceStatusUpdateHandler extends BaseEventHandler {
+    handle(data){
+        this.arion.spaces[data.space]['liveData']['membersStatus'][data.u_uid] = data.data;
+        this.arion.onLiveMemberDeviceStatusUpdated(data.space, data.data);
+    }
+}
+
 export {
     ErrorHandler,
     AuthorizedHandler,
@@ -163,5 +170,6 @@ export {
     LeftLiveSpaceHandler,
     UserLeftLiveSpaceHandler,
     SystemNotificationsHandler,
-    ConnectedToPublicSpaceHandler
+    ConnectedToPublicSpaceHandler,
+    MemberDeviceStatusUpdateHandler
 }
