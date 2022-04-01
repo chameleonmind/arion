@@ -177,5 +177,6 @@ export {
     UserLeftLiveSpaceHandler,
     SystemNotificationsHandler,
     ConnectedToPublicSpaceHandler,
-    MemberDeviceStatusUpdateHandler
+    MemberDeviceStatusUpdateHandler,
+    SearchMembersResultsHandler
 }

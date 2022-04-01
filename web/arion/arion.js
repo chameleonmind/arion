@@ -201,6 +201,10 @@ window.Arion = class {
         // implement this
     }
 
+    onSearchMembersResults(data){
+        // implement this
+    }
+
     onUserOnlineOnDeviceInSpace(space, data){
         // implement this
     }
