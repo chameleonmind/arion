@@ -45,6 +45,13 @@ class SearchMembersResultsHandler extends BaseEventHandler {
     }
 }
 
+class NewPrivateSpaceOpenedHandler extends BaseEventHandler {
+    handle(data){
+        this.arion.spaces[data.data.info.id] = data.data;
+        this.arion.onNewPrivateSpaceOpened(data.data);
+    }
+}
+
 class SpacesListHandler extends BaseEventHandler {
     handle(data){
         this.arion.connected = true;
@@ -178,5 +185,6 @@ export {
     SystemNotificationsHandler,
     ConnectedToPublicSpaceHandler,
     MemberDeviceStatusUpdateHandler,
-    SearchMembersResultsHandler
+    SearchMembersResultsHandler,
+    NewPrivateSpaceOpenedHandler
 }

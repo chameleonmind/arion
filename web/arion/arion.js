@@ -44,6 +44,7 @@ window.Arion = class {
             'spaces_list': new eventHandlers.SpacesListHandler(this),
             'connected_to_public_space': new eventHandlers.ConnectedToPublicSpaceHandler(this),
             'search_members_results': new eventHandlers.SearchMembersResultsHandler(this),
+            'new_private_space_opened': new eventHandlers.NewPrivateSpaceOpenedHandler(this),
             'space_messages': new eventHandlers.SpaceMessagesHandler(this),
             'new_private_message': new eventHandlers.NewMessageHandler(this),
             'new_public_space_message': new eventHandlers.NewPublicSpaceMessageHandler(this),
@@ -68,6 +69,11 @@ window.Arion = class {
     /* public */
     searchMembers(query){
         this.emit('searchMembers', 0, {query: query});
+    }
+
+    /* public */
+    newPrivateChat(uUid){
+        this.emit('newPrivateChat', 0, {uUid: uUid});
     }
 
     /* public */
@@ -202,6 +208,10 @@ window.Arion = class {
     }
 
     onSearchMembersResults(data){
+        // implement this
+    }
+
+    onNewPrivateSpaceOpened(data){
         // implement this
     }
 
