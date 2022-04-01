@@ -43,6 +43,7 @@ window.Arion = class {
             'authorized': new eventHandlers.AuthorizedHandler(this),
             'spaces_list': new eventHandlers.SpacesListHandler(this),
             'connected_to_public_space': new eventHandlers.ConnectedToPublicSpaceHandler(this),
+            'search_members_results': new eventHandlers.SearchMembersResultsHandler(this),
             'space_messages': new eventHandlers.SpaceMessagesHandler(this),
             'new_private_message': new eventHandlers.NewMessageHandler(this),
             'new_public_space_message': new eventHandlers.NewPublicSpaceMessageHandler(this),
@@ -62,6 +63,11 @@ window.Arion = class {
     /* public */
     connectToPublicSpace(spaceCode){
         this.emit('connectToPublicSpace', 0, {spaceCode: spaceCode});
+    }
+
+    /* public */
+    searchMembers(query){
+        this.emit('searchMembers', 0, {query: query});
     }
 
     /* public */

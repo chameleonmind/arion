@@ -39,6 +39,12 @@ class ConnectedToPublicSpaceHandler extends BaseEventHandler {
     }
 }
 
+class SearchMembersResultsHandler extends BaseEventHandler {
+    handle(data){
+        this.arion.onSearchMembersResults(data.data);
+    }
+}
+
 class SpacesListHandler extends BaseEventHandler {
     handle(data){
         this.arion.connected = true;
