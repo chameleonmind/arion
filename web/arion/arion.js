@@ -56,7 +56,7 @@ window.Arion = class {
             'request_to_join_live_space': new eventHandlers.RequestToJoinLiveSpaceHandler(this),
             'left_live_space': new eventHandlers.LeftLiveSpaceHandler(this),
             'another_user_left_live_space': new eventHandlers.UserLeftLiveSpaceHandler(this),
-            'system_notification': new eventHandlers.SystemNotificationsHandler(this),
+            'in-app_notification': new eventHandlers.InAppNotificationsHandler(this),
             'member_device_status_update': new eventHandlers.MemberDeviceStatusUpdateHandler(this),
         };
     }
@@ -257,6 +257,10 @@ window.Arion = class {
 
     onLiveSpaceConnectionBroke(spaceId){
         this.onLeftLiveSpace(this.spaces[spaceId]);
+    }
+
+    onNewInAppNotification(data){
+        // implement this
     }
 
     onDisconnected(){

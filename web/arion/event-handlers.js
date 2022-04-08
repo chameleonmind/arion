@@ -154,9 +154,10 @@ class UserLeftLiveSpaceHandler extends BaseEventHandler {
     }
 }
 
-class SystemNotificationsHandler extends BaseEventHandler {
+class InAppNotificationsHandler extends BaseEventHandler {
     handle(data){
         this.arion.log(data);
+        this.arion.onNewInAppNotification(data.data);
     }
 }
 
@@ -182,7 +183,7 @@ export {
     RequestToJoinLiveSpaceHandler,
     LeftLiveSpaceHandler,
     UserLeftLiveSpaceHandler,
-    SystemNotificationsHandler,
+    InAppNotificationsHandler,
     ConnectedToPublicSpaceHandler,
     MemberDeviceStatusUpdateHandler,
     SearchMembersResultsHandler,
