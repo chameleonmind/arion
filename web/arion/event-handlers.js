@@ -103,8 +103,15 @@ class NewMessageHandler extends BaseEventHandler {
 
 class NewPublicSpaceMessageHandler extends BaseEventHandler {
     handle(data){
-        this.arion.spaces[data.space]['messages'][data.data.lk_data.id] = data.data.lk_data;
-        this.arion.onNewMessage(data.space, data.data.lk_data);
+        if(typeof this.arion.spaces[data.space] !== "undefined"){
+            // if connected to that PublicSpace, store it in `messages` and proceed
+            this.arion.spaces[data.space]['messages'][data.data.lk_data.id] = data.data.lk_data;
+            this.arion.onNewMessage(data.space, data.data.lk_data);
+        }
+        else{
+            // else treat it like a regular in-app notification
+            this.arion.onNewInAppNotification(data.data);
+        }
     }
 }
 
@@ -156,7 +163,6 @@ class UserLeftLiveSpaceHandler extends BaseEventHandler {
 
 class InAppNotificationsHandler extends BaseEventHandler {
     handle(data){
-        this.arion.log(data);
         this.arion.onNewInAppNotification(data.data);
     }
 }
