@@ -260,7 +260,8 @@ window.Arion = class {
     }
 
     onNewInAppNotification(data){
-        // implement this
+        // implement/override this
+        alert("new notification: " + data.type + "\n title: " + data.title + "\n body: " + data.body)
     }
 
     onDisconnected(){
