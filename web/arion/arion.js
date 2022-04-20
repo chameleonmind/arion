@@ -19,10 +19,7 @@ window.Arion = class {
 
     constructor(params) {
         let self = this;
-        // @ToDo: this should be fixed to load the script internally from the package
-        loadJS('https://milanpasic92.github.io/arion/web/arion/RTCMultiConnection-v3.6.9.js', function (){
-            self.init(params);
-        }, document.body);
+        self.init(params);
 
         // will be needed for joinLive(); since RtcMultiConnection lib uses io lib for sockets
         loadJS('https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js', function (){}, document.body);

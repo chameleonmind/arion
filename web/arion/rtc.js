@@ -1,3 +1,5 @@
+import {RTCMultiConnection} from './RTCMultiConnection-v3.6.9.js';
+
 class RtcSpace {
 
     /** RtcSpace is a wrapper class around RtcMultiConnection.js */
