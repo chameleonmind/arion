@@ -1,0 +1,9 @@
+{
+  "name": "arion-cli",
+  "version": "0.0.1",
+  "keywords": [
+    "learningkey"
+  ],
+  "license": "MIT",
+  "dependencies": {}
+}
